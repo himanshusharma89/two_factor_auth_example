@@ -12,8 +12,6 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  firebase_dart_admin_auth_sdk:
-    path: ../firebase-dart-admin-auth-sdk/firebase-dart-admin-auth-sdk 
 
 dev_dependencies:
   flutter_test:

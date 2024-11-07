@@ -1,20 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_dart_admin_auth_sdk/firebase_dart_admin_auth_sdk.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize Firebase with the web api key and project id
-  await FirebaseApp.initializeAppWithEnvironmentVariables(
-    apiKey: 'AIzaSyBli2c-dmD4w2kLHmZU3UtewETvuruVAN4',
-    projectId: 'fire-base-dart-admin-auth-sdk',
-    bucketName: 'gs://fire-base-dart-admin-auth-sdk.appspot.com', 
-    authdomain: 'localhost', 
-    messagingSenderId: '473309149917', 
-    appId: '1:473309149917:ios:b7819b37ac576f47a67934'
-  );
-
-  FirebaseApp.instance.getAuth();
   runApp(const MyApp());
 }
 
@@ -39,7 +26,6 @@ class UserManagementScreen extends StatefulWidget {
 }
 
 class _UserManagementScreenState extends State<UserManagementScreen> {
-  FirebaseAuth? firebaseAuth;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _roleController = TextEditingController();
@@ -47,54 +33,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       TextEditingController(); // New field for phone number
   final _otpController = TextEditingController(); // New field for OTP
   String _status = "";
-  ConfirmationResult? confirmationResult; // Stores verification details for OTP
 
   @override
   void initState() {
-    firebaseAuth = FirebaseApp.firebaseAuth;
     super.initState();
-  }
-
-  // Register user and send OTP
-  Future<void> registerNewUser() async {
-    try {
-      // Register user with email and password
-      var userCredential = await firebaseAuth?.createUserWithEmailAndPassword(
-          _emailController.text, _passwordController.text);
-
-      if (userCredential != null) {
-        // Update user role
-        firebaseAuth?.updateUserInformation(userCredential.user.uid,
-            userCredential.user.idToken!, {'role': _roleController.text});
-
-      final appVerifier = MockApplicationVerifier(); // Replace with actual recaptha verifier
-        confirmationResult = await firebaseAuth!.phone.signInWithPhoneNumber(_phoneController.text, appVerifier);
-      }
-
-      setState(() {
-        _status = "User created successfully. OTP sent for 2FA.";
-      });
-    } catch (e) {
-      setState(() {
-        _status = "Failed to create user: $e";
-      });
-    }
-  }
-
-  // Verify OTP
-  Future<void> verifyOtp() async {
-    if (confirmationResult != null) {
-      try {
-        await confirmationResult?.confirm(_otpController.text);
-        setState(() {
-          _status = "OTP verified successfully, user signed in.";
-        });
-      } catch (e) {
-        setState(() {
-          _status = "Failed to verify OTP: $e";
-        });
-      }
-    }
   }
 
   @override
@@ -126,7 +68,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: registerNewUser,
+              onPressed: () {}, //registerNewUser
               child: const Text('Create User and Send OTP'),
             ),
             const SizedBox(height: 20),
@@ -135,7 +77,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               decoration: const InputDecoration(labelText: 'Enter OTP'),
             ),
             ElevatedButton(
-              onPressed: verifyOtp,
+              onPressed: () {}, //verifyOtp,
               child: const Text('Verify OTP'),
             ),
             const SizedBox(height: 20),
