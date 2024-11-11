@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_dart_admin_auth_sdk/firebase_dart_admin_auth_sdk.dart';
+import 'package:flutter/services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  String serviceAccountContent = await rootBundle.loadString(
+      'assets/service_account.json'); //Add your own JSON service account and make sure it is ignored in your version control system
 
-  // Initialize Firebase with the web api key and project id
-  await FirebaseApp.initializeAppWithEnvironmentVariables(
-    apiKey: 'AIzaSyBli2c-dmD4w2kLHmZU3UtewETvuruVAN4',
-    projectId: 'fire-base-dart-admin-auth-sdk',
-    bucketName: 'gs://fire-base-dart-admin-auth-sdk.appspot.com', 
-    authdomain: 'localhost', 
-    messagingSenderId: '473309149917', 
-    appId: '1:473309149917:ios:b7819b37ac576f47a67934'
+  await FirebaseApp.initializeAppWithServiceAccount(
+    serviceAccountContent: serviceAccountContent,
+    serviceAccountKeyFilePath: '',
   );
 
   FirebaseApp.instance.getAuth();
@@ -67,7 +65,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         firebaseAuth?.updateUserInformation(userCredential.user.uid,
             userCredential.user.idToken!, {'role': _roleController.text});
 
-      final appVerifier = MockApplicationVerifier(); // Replace with actual recaptha verifier
+        final appVerifier = MockApplicationVerifier(); // Replace with actual recaptha verifier
         confirmationResult = await firebaseAuth!.phone.signInWithPhoneNumber(_phoneController.text, appVerifier);
       }
 
